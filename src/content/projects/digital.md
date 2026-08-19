@@ -2,7 +2,7 @@
 title: "Digital（2019-2023）"
 year: 2019
 section: "Projects"
-summary: "Digital（2019-2023）"
+summary: 'Digital（2019-2023）'
 cover: "/images/digital/cover.jpg"
 gallery:
   - "/images/digital/00.jpg"

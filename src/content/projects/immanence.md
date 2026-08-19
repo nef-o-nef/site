@@ -2,7 +2,7 @@
 title: "Immanence"
 year: 2024
 section: "Projects"
-summary: "The Now Continuum @sssc.collectivee 2025"
+summary: 'The Now Continuum @sssc.collectivee 2025'
 cover: "/images/immanence/cover.jpg"
 ---
 

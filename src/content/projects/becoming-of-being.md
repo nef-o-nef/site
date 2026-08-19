@@ -2,7 +2,7 @@
 title: "Becoming of Being"
 year: 2018
 section: "Atom"
-summary: "Back to where I started"
+summary: 'Back to where I started'
 cover: "/images/becoming-of-being/cover.jpg"
 ---
 

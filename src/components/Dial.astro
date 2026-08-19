@@ -9,7 +9,7 @@ const p = (s = '') => `${base}/${s.replace(/^\//, '')}`.replace(/\/{2,}/g, '/');
 <ul class="dial">
   {works.map((w) => (
     <li>
-      <a href={p(`works/${w.id}/`)} data-work={w.id}>
+      <a href={p(`projects/${w.id}/`)} data-work={w.id}>
         <span class="year">{w.data.year}</span>
         <span class="name">{w.data.title}</span>
         <span class="sect">{w.data.section}</span>

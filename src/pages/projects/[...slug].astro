@@ -3,8 +3,8 @@ import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
-  const works = await getCollection('works', (w) => !w.data.draft);
-  return works.map((w) => ({ params: { slug: w.id }, props: { w } }));
+  const projects = await getCollection('projects', (e) => !e.data.draft);
+  return projects.map((w) => ({ params: { slug: w.id }, props: { w } }));
 }
 
 const { w } = Astro.props;
@@ -21,7 +21,7 @@ const media = (src) =>
   <article>
     <header class="work-head">
       <h1>{w.data.title}</h1>
-      <p class="meta">{w.data.year} — {w.data.section}</p>
+      <p class="meta">{w.data.year}{w.data.section ? ` — ${w.data.section}` : ''}</p>
     </header>
 
     {w.data.cover && <div class="plate" set:html={media(w.data.cover)} />}
@@ -32,6 +32,6 @@ const media = (src) =>
       <div class="gallery" set:html={w.data.gallery.map(media).join('')} />
     )}
 
-    <a class="back" href={p('works/')}>← All works</a>
+    <a class="back" href={p('projects/')}>← All projects</a>
   </article>
 </Base>

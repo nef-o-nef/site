@@ -2,7 +2,7 @@
 title: "Stretch the Strings! - Synthesizer Chords (2023)"
 year: 2023
 section: "Projects"
-summary: "Four elastic strings connect to the corners of the space to the synthesizer. These conductive strings will raise the voltage by pulling, with each str"
+summary: 'Four elastic strings connect to the corners of the space to the synthesizer. These conductive strings will raise the voltage by pulling, with each str'
 cover: "/images/stretch-the-strings-synthesizer-chords/cover.jpg"
 gallery:
   - "/images/stretch-the-strings-synthesizer-chords/00.jpg"

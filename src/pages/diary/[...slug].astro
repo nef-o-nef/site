@@ -1,0 +1,36 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('diary', (e) => !e.data.draft);
+  return posts.map((e) => ({ params: { slug: e.id }, props: { e } }));
+}
+
+const { e } = Astro.props;
+const { Content } = await render(e);
+const base = import.meta.env.BASE_URL;
+const p = (s = '') => `${base}/${s.replace(/^\//, '')}`.replace(/\/{2,}/g, '/');
+const fmt = (d) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const media = (src) =>
+  src.endsWith('.mp4')
+    ? `<video src="${p(src)}" autoplay muted loop playsinline></video>`
+    : `<img src="${p(src)}" alt="" loading="lazy" />`;
+---
+
+<Base title={e.data.title}>
+  <article>
+    <header class="work-head">
+      <h1>{e.data.title}</h1>
+      <p class="meta">{fmt(e.data.date)}</p>
+    </header>
+
+    <div class="prose"><Content /></div>
+
+    {e.data.images.length > 0 && (
+      <div class="gallery" set:html={e.data.images.map(media).join('')} />
+    )}
+
+    <a class="back" href={p('diary/')}>← All entries</a>
+  </article>
+</Base>

@@ -2,7 +2,7 @@
 title: "Pulsar"
 year: 2023
 section: "Planet Roaming"
-summary: "*pulsing sound* a precise rhythms from a spinning star. Light radiation"
+summary: '*pulsing sound* a precise rhythms from a spinning star. Light radiation'
 ---
 
 *pulsing sound* a precise rhythms from a spinning star. Light radiation  

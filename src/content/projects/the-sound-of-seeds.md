@@ -2,7 +2,7 @@
 title: "The Sound of Seeds (2023)"
 year: 2023
 section: "Projects"
-summary: ""Do plants hear sounds?""
+summary: 'Do plants hear sounds?'
 cover: "/images/the-sound-of-seeds/cover.jpg"
 gallery:
   - "/images/the-sound-of-seeds/00.jpg"

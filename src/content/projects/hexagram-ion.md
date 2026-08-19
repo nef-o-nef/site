@@ -2,7 +2,7 @@
 title: "烛显星 Hexagram Ion (2021)"
 year: 2021
 section: "Projects"
-summary: ""When Reality is limited in its composition, isolated from the Thing itself, the whole realm of the"
+summary: 'When Reality is limited in its composition, isolated from the Thing itself, the whole realm of the'
 cover: "/images/hexagram-ion/cover.jpg"
 gallery:
   - "/images/hexagram-ion/00.jpg"

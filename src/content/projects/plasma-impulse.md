@@ -2,7 +2,7 @@
 title: "Plasma Impulse (2023)"
 year: 2023
 section: "Projects"
-summary: "Moving slowly or rapidly through magnetic fields like the clouds. When we look at the spectra emitted by distant clouds of hydrogen ions, we can see t"
+summary: 'Moving slowly or rapidly through magnetic fields like the clouds. When we look at the spectra emitted by distant clouds of hydrogen ions, we can see t'
 cover: "/images/plasma-impulse/cover.jpg"
 gallery:
   - "/images/plasma-impulse/00.jpg"

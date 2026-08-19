@@ -1,0 +1,57 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const now = new Date();
+const all = (await getCollection('events', (e) => !e.data.draft));
+const over = (e) => (e.data.endDate ?? e.data.date) < now;
+
+const upcoming = all.filter((e) => !over(e)).sort((a, b) => a.data.date - b.data.date);
+const past = all.filter(over).sort((a, b) => b.data.date - a.data.date);
+
+const day = (d) => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+const yr = (d) => d.getFullYear();
+---
+
+<Base title="Events">
+  {upcoming.length === 0 && <p class="lede">Nothing scheduled at the moment.</p>}
+
+  {upcoming.length > 0 && (
+    <>
+      <h2 class="eyebrow">Upcoming</h2>
+      <ul class="events">
+        {upcoming.map((e) => (
+          <li>
+            <span class="date">{day(e.data.date)}<i>{yr(e.data.date)}</i></span>
+            <span class="body">
+              <span class="title">
+                {e.data.link ? <a href={e.data.link}>{e.data.title}</a> : e.data.title}
+              </span>
+              <span class="place">{e.data.venue}, {e.data.city}</span>
+              {e.data.with && <span class="place">with {e.data.with}</span>}
+            </span>
+            {e.data.kind && <span class="kind">{e.data.kind}</span>}
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+
+  {past.length > 0 && (
+    <>
+      <h2 class="eyebrow">Past</h2>
+      <ul class="events past">
+        {past.map((e) => (
+          <li>
+            <span class="date">{day(e.data.date)}<i>{yr(e.data.date)}</i></span>
+            <span class="body">
+              <span class="title">{e.data.title}</span>
+              <span class="place">{e.data.venue}, {e.data.city}</span>
+            </span>
+            {e.data.kind && <span class="kind">{e.data.kind}</span>}
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+</Base>

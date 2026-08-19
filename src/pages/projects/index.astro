@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import Dial from '../../components/Dial.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects', (e) => !e.data.draft))
+  .sort((a, b) => b.data.year - a.data.year);
+const covers = projects.filter((w) => w.data.cover).map((w) => ({ id: w.id, src: w.data.cover }));
+---
+
+<Base title="Projects" covers={covers}>
+  <Dial works={projects} />
+</Base>
