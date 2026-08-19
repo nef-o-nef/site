@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import Dial from '../components/Dial.astro';
+import { getCollection } from 'astro:content';
+
+const works = (await getCollection('works', (w) => !w.data.draft))
+  .sort((a, b) => b.data.year - a.data.year);
+const covers = works.filter((w) => w.data.cover).map((w) => ({ id: w.id, src: w.data.cover }));
+---
+
+<Base title={null} covers={covers}>
+  <p class="lede">
+    Sound, installation, and instruments. Listening to plasma, seeds, radio, and
+    the resonance of rooms.
+  </p>
+  <Dial works={works} />
+</Base>

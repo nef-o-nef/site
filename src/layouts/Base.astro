@@ -1,0 +1,50 @@
+---
+import '../styles/global.css';
+
+const { title, description = 'Nefo — sound, installation, and instruments.', covers = [] } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const p = (s = '') => `${base}/${s.replace(/^\//, '')}`.replace(/\/{2,}/g, '/');
+const here = Astro.url.pathname;
+
+const nav = [
+  { href: p('works/'), label: 'Works' },
+  { href: p('about/'), label: 'About' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title ? `${title} — NEFO` : 'NEFO'}</title>
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="dark" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&display=swap"
+    />
+  </head>
+  <body>
+    {covers.length > 0 && (
+      <div class="backdrop">
+        {covers.map((c) => <img src={p(c.src)} alt="" data-for={c.id} loading="lazy" />)}
+      </div>
+    )}
+
+    <header class="masthead">
+      <p class="wordmark"><a href={p()}>Nefo</a></p>
+      <nav>
+        {nav.map((i) => (
+          <a href={i.href} aria-current={here === i.href ? 'page' : undefined}>{i.label}</a>
+        ))}
+      </nav>
+    </header>
+
+    <main><slot /></main>
+
+    <footer>Amsterdam · <a href="mailto:nefozhang@gmail.com">nefozhang@gmail.com</a></footer>
+  </body>
+</html>

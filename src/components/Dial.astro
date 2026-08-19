@@ -1,0 +1,32 @@
+---
+// Index of works. Hovering a row fades that work's cover up behind the page —
+// tuning through the list rather than scanning a grid of thumbnails.
+const { works } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const p = (s = '') => `${base}/${s.replace(/^\//, '')}`.replace(/\/{2,}/g, '/');
+---
+
+<ul class="dial">
+  {works.map((w) => (
+    <li>
+      <a href={p(`works/${w.id}/`)} data-work={w.id}>
+        <span class="year">{w.data.year}</span>
+        <span class="name">{w.data.title}</span>
+        <span class="sect">{w.data.section}</span>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<script>
+  const imgs = document.querySelectorAll('.backdrop img');
+  const lit = (id) => imgs.forEach((i) => i.classList.toggle('lit', i.dataset.for === id));
+  document.querySelectorAll('.dial a').forEach((a) => {
+    const on = () => lit(a.dataset.work);
+    const off = () => lit('');
+    a.addEventListener('pointerenter', on);
+    a.addEventListener('focus', on);
+    a.addEventListener('pointerleave', off);
+    a.addEventListener('blur', off);
+  });
+</script>

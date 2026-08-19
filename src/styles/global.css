@@ -1,0 +1,123 @@
+/* Palette sampled from the plasma and ion photographs: violet glow in a blue-black
+   vacuum, with the warm arc that shows up at the edge of a discharge. */
+:root {
+  --void:  #0a0b12;
+  --field: #14161f;
+  --ink:   #d9dbe6;
+  --dim:   #6b7089;
+  --glow:  #8f8fef;
+  --arc:   #d98a45;
+  --rule:  #23263a;
+
+  /* Type scale on just ratios from a 16px 1/1 */
+  --s1: 16px; --s98: 18px; --s54: 20px; --s32: 24px;
+  --s74: 28px; --s21: 32px; --s52: 40px; --s31: 48px;
+
+  --ui: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --text: 'Newsreader', Georgia, serif;
+  --measure: 60ch;
+  --gutter: clamp(20px, 5vw, 64px);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--void);
+  color: var(--ink);
+  font: var(--s1)/1.6 var(--ui);
+  padding: 0 var(--gutter) 120px;
+}
+
+a { color: var(--glow); text-decoration: none; }
+a:hover { color: var(--arc); }
+:focus-visible { outline: 1px solid var(--arc); outline-offset: 4px; }
+
+/* ---- masthead ---- */
+.masthead {
+  position: relative; z-index: 2;
+  display: flex; flex-wrap: wrap; gap: var(--s32);
+  align-items: baseline; justify-content: space-between;
+  padding: var(--s32) 0 var(--s98);
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: var(--s52);
+}
+.masthead .wordmark {
+  margin: 0; font-size: var(--s54); font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase;
+}
+.masthead .wordmark a { color: var(--ink); }
+.masthead .wordmark a:hover { color: var(--glow); }
+.masthead nav { display: flex; gap: var(--s32); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; }
+.masthead nav a { color: var(--dim); }
+.masthead nav a:hover, .masthead nav a[aria-current='page'] { color: var(--ink); }
+
+main { position: relative; z-index: 2; max-width: 1180px; margin: 0 auto; }
+
+/* ---- tuning backdrop: the hovered work bleeds up behind the page ---- */
+.backdrop { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: var(--void); }
+.backdrop img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; opacity: 0; transition: opacity .5s ease;
+  filter: saturate(1.1) contrast(1.05);
+}
+.backdrop img.lit { opacity: .3; }
+.backdrop::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(120% 80% at 50% 0%, transparent, var(--void) 78%);
+}
+@media (prefers-reduced-motion: reduce) { .backdrop img { transition: none; } }
+
+/* ---- index: a dial you tune through ---- */
+.dial { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+.dial li { border-bottom: 1px solid var(--rule); }
+.dial a {
+  display: grid; align-items: baseline; gap: var(--s1);
+  grid-template-columns: 4rem 1fr auto;
+  padding: var(--s32) 0; color: var(--ink);
+}
+.dial .year { font-size: 13px; color: var(--dim); font-variant-numeric: tabular-nums; letter-spacing: .06em; }
+.dial .name { font-size: var(--s74); font-weight: 400; letter-spacing: -0.015em; line-height: 1.15; }
+.dial .sect { font-size: 12px; color: var(--dim); letter-spacing: .16em; text-transform: uppercase; }
+.dial a:hover .name, .dial a:focus-visible .name { color: var(--glow); }
+.dial a:hover .year, .dial a:hover .sect { color: var(--ink); }
+
+@media (max-width: 640px) {
+  .dial a { grid-template-columns: 3rem 1fr; }
+  .dial .sect { grid-column: 2; }
+  .dial .name { font-size: var(--s32); }
+}
+
+/* ---- prose ---- */
+.prose { max-width: var(--measure); font-family: var(--text); font-size: var(--s54); line-height: 1.6; color: #c9ccd9; }
+.prose p { margin: 0 0 var(--s32); }
+.prose em { color: var(--ink); }
+.prose h2 { font-family: var(--ui); font-size: 12px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); margin: var(--s52) 0 var(--s1); }
+.prose ul { padding-left: 1.1em; }
+.prose a { border-bottom: 1px solid currentColor; }
+
+.lede { max-width: 46ch; font-family: var(--text); font-size: clamp(24px, 3.4vw, 40px); line-height: 1.3; margin: 0 0 var(--s52); color: var(--ink); }
+
+/* ---- work page ---- */
+.work-head { margin-bottom: var(--s52); }
+.work-head h1 { font-size: clamp(32px, 6vw, 68px); font-weight: 400; letter-spacing: -0.03em; line-height: 1.05; margin: 0 0 var(--s98); }
+.work-head .meta { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); }
+
+.plate { margin: var(--s52) 0; }
+.plate img, .plate video { display: block; width: 100%; height: auto; background: var(--field); }
+.gallery { display: grid; gap: var(--s32); grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin: var(--s52) 0; }
+.gallery img, .gallery video { display: block; width: 100%; height: auto; background: var(--field); }
+
+.back { display: inline-block; margin-top: var(--s52); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; }
+
+footer {
+  position: relative; z-index: 2;
+  max-width: 1180px; margin: 96px auto 0; padding-top: var(--s1);
+  border-top: 1px solid var(--rule); font-size: 13px; color: var(--dim);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  main { animation: lift .5s cubic-bezier(.2,.7,.3,1) both; }
+  @keyframes lift { from { opacity: 0; transform: translateY(8px); } }
+}

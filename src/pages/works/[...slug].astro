@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const works = await getCollection('works', (w) => !w.data.draft);
+  return works.map((w) => ({ params: { slug: w.id }, props: { w } }));
+}
+
+const { w } = Astro.props;
+const { Content } = await render(w);
+const base = import.meta.env.BASE_URL;
+const p = (s = '') => `${base}/${s.replace(/^\//, '')}`.replace(/\/{2,}/g, '/');
+const media = (src) =>
+  src.endsWith('.mp4')
+    ? `<video src="${p(src)}" autoplay muted loop playsinline></video>`
+    : `<img src="${p(src)}" alt="" loading="lazy" />`;
+---
+
+<Base title={w.data.title} description={w.data.summary}>
+  <article>
+    <header class="work-head">
+      <h1>{w.data.title}</h1>
+      <p class="meta">{w.data.year} — {w.data.section}</p>
+    </header>
+
+    {w.data.cover && <div class="plate" set:html={media(w.data.cover)} />}
+
+    <div class="prose"><Content /></div>
+
+    {w.data.gallery.length > 0 && (
+      <div class="gallery" set:html={w.data.gallery.map(media).join('')} />
+    )}
+
+    <a class="back" href={p('works/')}>← All works</a>
+  </article>
+</Base>
