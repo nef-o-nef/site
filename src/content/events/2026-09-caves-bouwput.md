@@ -5,5 +5,4 @@ endDate: 2026-09-20
 venue: "De Bouwput"
 city: "Amsterdam"
 kind: "installation"
-draft: true
 ---

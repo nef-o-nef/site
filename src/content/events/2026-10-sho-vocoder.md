@@ -5,5 +5,4 @@ venue: "Zone2Source"
 city: "Amsterdam"
 kind: "performance"
 with: "XiaoJia"
-draft: true
 ---
