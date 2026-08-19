@@ -2,7 +2,7 @@
 title: "Nuclear bulb (2022)"
 year: 2022
 section: "Atom"
-summary: 'In a vacuum filled with free charges, a luminous cloud is brighter than flame, which is ionized plasma. It is like soft lightning or solar wind blowin'
+summary: ''
 cover: "/images/nuclear-bulb/cover.jpg"
 gallery:
   - "/images/nuclear-bulb/00.jpg"

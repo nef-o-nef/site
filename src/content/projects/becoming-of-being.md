@@ -3,7 +3,7 @@ title: "Becoming of Being"
 year: 2018
 section: "Atom"
 summary: 'Back to where I started'
-cover: "/images/becoming-of-being/cover.jpg"
+cover: ""
 ---
 
 Back to where I started
@@ -94,43 +94,18 @@ fruitful emptiness
 空与有，是相成而不是相破的
 
 世出世间一切法，都是缘起有的，即相依相待而存在的
-
-凡是因待而有的，既是无自性的(self) 无自性所以是空的
+凡是因待而有的，既是无自性的(self) 
+无自性所以是空的
 
 空，所以是缘起有的  
 一切的一切，如幻如化
 
 幻化，也不都无所有，龟毛兔角才是无的
-
 幻化是绝无自性而宛然现的
-
 幻相法尔，虽空而可闻可见
 
 所以一切是相待的假名有，即一切是绝待的毕竟空
 
-Enlightenment
 
 摘自 中观 唯识  
 龙树《中论》《大智度论》鸠摩罗什译
-
-Entangle
-
-‘To be entangled is not simply to be intertwined with another, as in the joining of separate entities. … This is not to say that emergence happens once and for all, as an event or as a process that takes place according to some external measure of space and of time, but rather that time and space, like matter and meaning, come into existence, are iteratively reconfigured through each intra-action, thereby making it impossible to differentiate in any absolute sense between creation and renewal, beginning and returning, continuity and discontinuity, here and there, past and future.’
-
-‘Ethics is not a geometrical calculation; "others" are never very far from "us"; "they" and "we" are co-constituted and entangled through the very cuts "we" help to enact. Cuts cut "things" together and apart. Cuts are not enacted from the outside, nor are they ever enacted once and for all.’
-
-- Karen Barad
-
-Entanglement is innate, entangled in pairs and different from each other, as above and below, as left and right, like the gradual reduction of gravity that levitates our feet.
-
-In other words, the quantum states of two or more particles become interdependent and entangled, even if large distances separate them, they will react to each other instantaneously.
-
-The ‘To be or not to be’ question touch on the state of entangled. Either take arms against trouble or by opposing end them. Either to dream — meeting another possibility midway affirms the dynamics of reality.
-
-(Note)
-
-Just as in thermohaline circulation, liquids flow differently and do not mix together, differences eventually separate human beings. There are vivid and mutually reinforcing differences that form the diversity of the world. On the other hand, the incompatibilities between individuals and collective, such as ethnic and religious, poverty and wealth, civil wars, and conflicts between nations, caused destruction.
-
-In the situation of epidemics, wars, and natural disasters, when we undergo the suffering of others from a distance, our connections with others enhance our inner strength and expand our capacity to rebuild and support each other.
-
-If we look for solutions for Interdependent survival and sustaining the Earth’s shared ecosystem, the evolution of life has already inspired and led the way for us.
