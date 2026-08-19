@@ -1,46 +1,40 @@
 ---
 import Base from '../layouts/Base.astro';
+import Spacetime from '../components/Spacetime.astro';
 import Dial from '../components/Dial.astro';
 import { getCollection } from 'astro:content';
 
 const base = import.meta.env.BASE_URL;
 const p = (s = '') => `${base}/${s.replace(/^\//, '')}`.replace(/\/{2,}/g, '/');
-const now = new Date();
 
 const projects = (await getCollection('projects', (e) => !e.data.draft))
   .sort((a, b) => b.data.year - a.data.year);
+const events = (await getCollection('events', (e) => !e.data.draft));
+
+const now = new Date();
+const yrs = (d) => (d - now) / 31557600000;   // signed years from today
+
+// Past projects fall on the lower cone, scheduled events on the upper one.
+const nodes = [
+  ...projects.map((w) => ({
+    href: p(`projects/${w.id}/`),
+    title: w.data.title,
+    meta: `${w.data.year} · project`,
+    t: Math.max(-9, (w.data.year - now.getFullYear()) * 1.1 - 0.6),
+  })),
+  ...events.map((e) => ({
+    href: p('events/'),
+    title: e.data.title,
+    meta: `${e.data.city} · event`,
+    t: Math.max(0.8, Math.min(9, yrs(e.data.date) * 6 + 1.2)),
+  })),
+];
+
 const covers = projects.filter((w) => w.data.cover).map((w) => ({ id: w.id, src: w.data.cover }));
-
-const next = (await getCollection('events', (e) => !e.data.draft))
-  .filter((e) => (e.data.endDate ?? e.data.date) >= now)
-  .sort((a, b) => a.data.date - b.data.date)
-  .slice(0, 3);
-
-const fmt = (d) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 ---
 
 <Base title={null} covers={covers}>
-  <p class="lede">
-    Sound, installation, and instruments. Listening to plasma, seeds, radio, and
-    the resonance of rooms.
-  </p>
-
-  {next.length > 0 && (
-    <section class="upnext">
-      <h2>Next</h2>
-      <ul>
-        {next.map((e) => (
-          <li>
-            <span class="when">{fmt(e.data.date)}</span>
-            <span class="what">{e.data.title}</span>
-            <span class="where">{e.data.venue}, {e.data.city}</span>
-          </li>
-        ))}
-      </ul>
-      <a class="more" href={p('events/')}>All events →</a>
-    </section>
-  )}
-
-  <h2 class="eyebrow">Projects</h2>
+  <Spacetime nodes={nodes} />
+  <h2 class="eyebrow">Index</h2>
   <Dial works={projects} />
 </Base>
