@@ -42,7 +42,6 @@ const nav = [
           <a href={i.href} aria-current={here.startsWith(i.href) ? 'page' : undefined}>{i.label}</a>
         ))}
       </nav>
-      <p class="menu-foot">Amsterdam · <a href="mailto:nefozhang@gmail.com">nefozhang@gmail.com</a></p>
     </div>
 
     <script>
@@ -60,7 +59,5 @@ const nav = [
     </script>
 
     <main><slot /></main>
-
-    <footer>Amsterdam · <a href="mailto:nefozhang@gmail.com">nefozhang@gmail.com</a></footer>
   </body>
 </html>

@@ -10,14 +10,22 @@
   --rule:  #e2e2e6;
 
   /* Type scale on just ratios from a 16px 1/1 */
-  --s1: 16px; --s98: 18px; --s54: 20px; --s32: 24px;
-  --s74: 28px; --s21: 32px; --s52: 40px; --s31: 48px;
+  /* Fluid: each step interpolates with the viewport instead of stepping at a
+     breakpoint, so nothing has to be re-tuned per screen. */
+  --s1:  clamp(13px, 0.25vw + 12px, 15px);
+  --s98: clamp(14px, 0.30vw + 13px, 16px);
+  --s54: clamp(15px, 0.35vw + 14px, 18px);
+  --s32: clamp(18px, 0.60vw + 16px, 22px);
+  --s74: clamp(20px, 1.10vw + 16px, 26px);
+  --s21: clamp(22px, 1.40vw + 17px, 30px);
+  --s52: clamp(26px, 2.00vw + 18px, 36px);
+  --s31: clamp(30px, 2.60vw + 20px, 44px);
 
   /* One face for the whole site. Nothing to download — system stack, CJK included. */
   --ui: ui-sans-serif, system-ui, -apple-system, 'Helvetica Neue', Arial,
         'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
   --text: var(--ui);
-  --measure: 60ch;
+  --measure: 66ch;
   --gutter: clamp(20px, 5vw, 64px);
 }
 
@@ -72,12 +80,11 @@ body.locked { overflow: hidden; }
 .menu[hidden] { display: none; }
 .menu nav { display: flex; flex-direction: column; }
 .menu nav a {
-  color: var(--ink); font-size: clamp(38px, 9vw, 92px); line-height: 1.12;
+  color: var(--ink); font-size: clamp(32px, 7vw, 68px); line-height: 1.12;
   letter-spacing: -0.035em; padding: 2px 0; width: max-content;
 }
 .menu nav a:hover { color: var(--glow); }
 .menu nav a[aria-current='page'] { color: var(--dim); }
-.menu-foot { margin: var(--s31) 0 0; font-size: 13px; color: var(--dim); }
 
 @media (prefers-reduced-motion: no-preference) {
   .menu nav a { animation: rise .42s cubic-bezier(.2,.7,.3,1) both; }
@@ -87,7 +94,7 @@ body.locked { overflow: hidden; }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 }
 
-main { position: relative; z-index: 2; max-width: 1180px; margin: 0 auto; }
+main { position: relative; z-index: 2; max-width: min(1040px, 100%); margin: 0 auto; }
 /* Homepage: a stage holding two independent drawings, then the index below it. */
 .stage { position: relative; height: min(78vh, 820px); margin-bottom: var(--s52); }
 @media (max-width: 640px) { .stage { height: 86vh; } }
@@ -114,7 +121,7 @@ main { position: relative; z-index: 2; max-width: 1180px; margin: 0 auto; }
   padding: var(--s32) 0; color: var(--ink);
 }
 .dial .year { font-size: 13px; color: var(--dim); font-variant-numeric: tabular-nums; letter-spacing: .06em; }
-.dial .name { font-size: var(--s74); font-weight: 400; letter-spacing: -0.015em; line-height: 1.15; }
+.dial .name { font-size: clamp(19px, 1.9vw, 25px); font-weight: 400; letter-spacing: -0.015em; line-height: 1.15; }
 .dial .sect { font-size: 12px; color: var(--dim); letter-spacing: .16em; text-transform: uppercase; }
 .dial a:hover .name, .dial a:focus-visible .name { color: var(--glow); }
 .dial a:hover .year, .dial a:hover .sect { color: var(--ink); }
@@ -133,25 +140,43 @@ main { position: relative; z-index: 2; max-width: 1180px; margin: 0 auto; }
 .prose ul { padding-left: 1.1em; }
 .prose a { border-bottom: 1px solid currentColor; }
 
-.lede { max-width: 46ch; font-family: var(--text); font-size: clamp(22px, 3vw, 34px); line-height: 1.35; letter-spacing: -0.015em; margin: 0 0 var(--s52); color: var(--ink); }
+.lede { max-width: 46ch; font-family: var(--text); font-size: clamp(19px, 2.2vw, 27px); line-height: 1.35; letter-spacing: -0.015em; margin: 0 0 var(--s52); color: var(--ink); }
 
 /* ---- work page ---- */
 .work-head { margin-bottom: var(--s52); }
-.work-head h1 { font-size: clamp(32px, 6vw, 68px); font-weight: 400; letter-spacing: -0.03em; line-height: 1.05; margin: 0 0 var(--s98); }
+.work-head h1 { font-size: clamp(26px, 4.2vw, 46px); font-weight: 400; letter-spacing: -0.03em; line-height: 1.05; margin: 0 0 var(--s98); }
 .work-head .meta { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); }
 
-.plate { margin: var(--s52) 0; }
+/* Text and images share a left edge and a set of named right-hand lines, so a
+   picture is either the width of the column, one step wider, or the full page —
+   never an arbitrary width that happens to miss every other edge. */
+article {
+  display: grid;
+  grid-template-columns:
+    [content-start] min(var(--measure), 100%) [content-end]
+    minmax(0, clamp(0px, 5vw, 5rem)) [popout-end]
+    minmax(0, 1fr) [full-end];
+}
+article > * { grid-column: content; }
+
+.plate { grid-column: content-start / popout-end; margin: var(--s52) 0; }
 .plate img, .plate video { display: block; width: 100%; height: auto; background: var(--field); }
-.gallery { display: grid; gap: var(--s32); grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin: var(--s52) 0; }
+
+.gallery {
+  grid-column: content-start / full-end;
+  display: grid; gap: var(--s32);
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  margin: var(--s52) 0;
+}
 .gallery img, .gallery video { display: block; width: 100%; height: auto; background: var(--field); }
+
+@media (max-width: 860px) {
+  article { display: block; }
+  .plate, .gallery { max-width: 100%; }
+}
 
 .back { display: inline-block; margin-top: var(--s52); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; }
 
-footer {
-  position: relative; z-index: 2;
-  max-width: 1180px; margin: 96px auto 0; padding-top: var(--s1);
-  border-top: 1px solid var(--rule); font-size: 13px; color: var(--dim);
-}
 
 @media (prefers-reduced-motion: no-preference) {
   main { animation: lift .5s cubic-bezier(.2,.7,.3,1) both; }
