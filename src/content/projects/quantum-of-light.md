@@ -3,7 +3,7 @@ title: "Quantum of Light"
 year: 2018
 section: "Atom"
 summary: ''
-cover: "/images/quantum-of-light/cover.jpg"
+cover: ""
 gallery:
   - "/images/quantum-of-light/00.mp4"
   - "/images/quantum-of-light/01.mp4"

@@ -9,7 +9,6 @@ const here = Astro.url.pathname;
 const nav = [
   { href: p('projects/'), label: 'Projects' },
   { href: p('events/'), label: 'Events' },
-  { href: p('diary/'), label: 'Diary' },
   { href: p('about/'), label: 'About' },
 ];
 ---
@@ -21,13 +20,7 @@ const nav = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title ? `${title} — NEFO` : 'NEFO'}</title>
     <meta name="description" content={description} />
-    <meta name="color-scheme" content="dark" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&display=swap"
-    />
+    <meta name="color-scheme" content="light" />
   </head>
   <body>
     {covers.length > 0 && (
@@ -38,12 +31,33 @@ const nav = [
 
     <header class="masthead">
       <p class="wordmark"><a href={p()}>Nefo</a></p>
+      <button class="trigger" id="trigger" aria-expanded="false" aria-controls="menu">
+        <span></span><span></span><span></span>
+      </button>
+    </header>
+
+    <div class="menu" id="menu" hidden>
       <nav>
         {nav.map((i) => (
           <a href={i.href} aria-current={here.startsWith(i.href) ? 'page' : undefined}>{i.label}</a>
         ))}
       </nav>
-    </header>
+      <p class="menu-foot">Amsterdam · <a href="mailto:nefozhang@gmail.com">nefozhang@gmail.com</a></p>
+    </div>
+
+    <script>
+      const trigger = document.getElementById('trigger');
+      const menu = document.getElementById('menu');
+      const set = (open) => {
+        menu.hidden = !open;
+        trigger.setAttribute('aria-expanded', String(open));
+        document.body.classList.toggle('locked', open);
+        if (open) menu.querySelector('a').focus();
+      };
+      trigger.addEventListener('click', () => set(menu.hidden));
+      addEventListener('keydown', (e) => e.key === 'Escape' && set(false));
+      menu.addEventListener('click', (e) => e.target.closest('a') && set(false));
+    </script>
 
     <main><slot /></main>
 

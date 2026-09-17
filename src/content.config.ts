@@ -31,14 +31,4 @@ const events = defineCollection({
   }),
 });
 
-const diary = defineCollection({
-  loader: md('diary'),
-  schema: z.object({
-    title: z.string(),
-    date: z.coerce.date(),
-    images: z.array(z.string()).default([]),
-    draft: z.boolean().default(false),
-  }),
-});
-
-export const collections = { projects, events, diary };
+export const collections = { projects, events };

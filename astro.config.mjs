@@ -1,8 +1,8 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  // Using nefo.cc as a custom domain on GitHub Pages -> keep base as '/'.
-  // Deploying to USER.github.io/REPO instead? set base: '/REPO'.
-  site: 'https://www.nefo.cc',
+  // Deployed to nef-o-nef.github.io/site, so every URL needs the /site prefix.
+  // Moving to a custom domain later? set site to it and base back to '/'.
+  site: 'https://nef-o-nef.github.io',
   base: '/site',
 });

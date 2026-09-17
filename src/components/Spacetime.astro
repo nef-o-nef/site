@@ -1,46 +1,46 @@
 ---
-// Minkowski diagram as navigation. Vertical axis is time: the past light cone
-// opens downward and holds finished projects, the future cone opens upward and
-// holds scheduled events. The torus knot sits at the origin — the present, the
-// only place where the two cones touch.
-const { nodes = [] } = Astro.props;
+// Minkowski diagram as navigation. The vertical axis is time: the cone opens
+// downward into finished work and upward into what hasn't happened yet, and
+// works sit on its surface as points. Events are not in here — they have their
+// own drawing, in its own coordinates.
+//
+// The cone itself is a link: a point opens that work, anywhere else on the
+// surface goes to the index. The shells are invisible geometry that exist only
+// so the raycaster has something with area to hit — lines are too thin to click.
+const { works = [], href = '#index' } = Astro.props;
 ---
 
-<section class="spacetime">
+<section class="spacetime" data-href={href}>
   <canvas id="cone"></canvas>
-  <div class="hud">
-    <p class="lede">
-      Sound, installation, and instruments. Listening to plasma, seeds, radio,
-      and the resonance of rooms.
-    </p>
-    <p class="hint">Drag to turn the space. Points are works — click one.</p>
-  </div>
   <a class="tag" id="tag" href="#"><b></b><i></i></a>
 </section>
 
-<script type="application/json" id="nodes" set:html={JSON.stringify(nodes)}></script>
+<script type="application/json" id="nodes" set:html={JSON.stringify(works)}></script>
 
 <script>
   import * as THREE from 'three';
 
   const canvas = document.getElementById('cone');
-  const nodes = JSON.parse(document.getElementById('nodes').textContent);
+  const href = canvas.closest('.spacetime').dataset.href;
+  const works = JSON.parse(document.getElementById('nodes').textContent);
   const tag = document.getElementById('tag');
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const TAU = Math.PI * 2;
 
-  const VOID = 0x0a0b12, GLOW = 0x8f8fef, ARC = 0xd98a45, DIM = 0x2b2f4a;
+  const PAPER = 0xffffff, GLOW = 0x4a3ed0, ARC = 0xa8551d, DIM = 0xc4c4cc;
   const H = 9;                                  // cone half-height
+
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   } catch (e) {
-    canvas.style.display = 'none';              // no WebGL: the list below still works
+    canvas.style.display = 'none';              // no WebGL: the nav still works
   }
 
   if (renderer) {
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(VOID, 0.035);
+    scene.fog = new THREE.FogExp2(PAPER, 0.03);
     const cam = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
     const root = new THREE.Group();
     scene.add(root);
@@ -54,64 +54,68 @@ const { nodes = [] } = Astro.props;
       for (let k = 1; k <= 9; k++) {
         const y = sign * (k / 9) * H, r = Math.abs(y) * 0.62;
         for (let i = 0; i < 96; i++) {
-          const a = (i / 96) * Math.PI * 2, b = ((i + 1) / 96) * Math.PI * 2;
+          const a = (i / 96) * TAU, b = ((i + 1) / 96) * TAU;
           pts.push(Math.cos(a) * r, y, Math.sin(a) * r, Math.cos(b) * r, y, Math.sin(b) * r);
         }
       }
       for (let i = 0; i < 24; i++) {                 // generators from the origin
-        const a = (i / 24) * Math.PI * 2, r = H * 0.62;
+        const a = (i / 24) * TAU, r = H * 0.62;
         pts.push(0, 0, 0, Math.cos(a) * r, sign * H, Math.sin(a) * r);
       }
       const g = new THREE.BufferGeometry();
       g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
       return g;
     };
-    root.add(line(coneGeo(1), ARC, 0.3));            // future
-    root.add(line(coneGeo(-1), GLOW, 0.22));         // past
+    root.add(line(coneGeo(1), ARC, 0.34));           // future
+    root.add(line(coneGeo(-1), GLOW, 0.28));         // past
 
-    // --- coordinate axes ---
     const ax = new THREE.BufferGeometry();
     ax.setAttribute('position', new THREE.Float32BufferAttribute(
       [-7,0,0, 7,0,0, 0,-H,0, 0,H,0, 0,0,-7, 0,0,7], 3));
-    root.add(line(ax, DIM, 0.9));
+    root.add(line(ax, DIM, 1));
 
-    // --- torus knot at the origin ---
-    const knot = new THREE.Mesh(
-      new THREE.TorusKnotGeometry(1.15, 0.09, 220, 20, 2, 3),
-      new THREE.MeshBasicMaterial({ color: GLOW, wireframe: true, transparent: true, opacity: 0.55 })
-    );
-    root.add(knot);
-
-    // --- works as points on the cones ---
+    // --- works as points on the cone ---
     const disc = (() => {
       const c = document.createElement('canvas'); c.width = c.height = 64;
       const x = c.getContext('2d'); const g = x.createRadialGradient(32,32,0,32,32,32);
-      g.addColorStop(0,'#fff'); g.addColorStop(0.35,'#fff'); g.addColorStop(1,'rgba(255,255,255,0)');
+      g.addColorStop(0,'#000'); g.addColorStop(0.35,'#000'); g.addColorStop(1,'rgba(0,0,0,0)');
       x.fillStyle = g; x.fillRect(0,0,64,64);
       return new THREE.CanvasTexture(c);
     })();
 
-    const place = (n, i) => {
+    const pos = [];
+    works.forEach((n, i) => {
       const y = Math.max(-H, Math.min(H, n.t)) * 0.92;
       const r = Math.abs(y) * 0.62 || 0.4;
-      const a = (i * 2.399) % (Math.PI * 2);        // golden angle, keeps them apart
-      return [Math.cos(a) * r, y, Math.sin(a) * r];
-    };
-    const pos = [];
-    nodes.forEach((n, i) => pos.push(...place(n, i)));
+      const a = (i * 2.399) % TAU;                   // golden angle, keeps them apart
+      pos.push(Math.cos(a) * r, y, Math.sin(a) * r);
+    });
     const pg = new THREE.BufferGeometry();
     pg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
     const points = new THREE.Points(pg, new THREE.PointsMaterial({
-      size: 0.42, map: disc, color: 0xffffff, transparent: true,
+      size: 0.42, map: disc, color: 0x000000, transparent: true,
       depthWrite: false, sizeAttenuation: true,
     }));
     root.add(points);
 
-    // --- interaction: drag to orbit, hover to label, click to open ---
-    let az = 0.6, el = 0.24, drag = null, moved = 0, hover = -1;
+    // --- invisible click target over each cone surface ---
+    const shells = [1, -1].map((sign) => {
+      const m = new THREE.Mesh(
+        new THREE.ConeGeometry(H * 0.62, H, 40, 1, true),
+        new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide })
+      );
+      if (sign > 0) m.rotation.x = Math.PI;           // apex down, opening upward
+      m.position.y = (sign * H) / 2;
+      root.add(m);
+      return m;
+    });
+
+    // --- interaction: drag to orbit, hover to label, click to open ------
+    let az = 0.6, el = 0.24, drag = null, moved = 0, hover = null, onCone = false;
     const ray = new THREE.Raycaster();
     ray.params.Points.threshold = 0.45;
     const ptr = new THREE.Vector2(-9, -9);
+    const at = new THREE.Vector3();
 
     const resize = () => {
       const w = canvas.clientWidth, h = canvas.clientHeight;
@@ -122,8 +126,11 @@ const { nodes = [] } = Astro.props;
     resize();
 
     canvas.addEventListener('pointerdown', (e) => { drag = e; moved = 0; canvas.setPointerCapture(e.pointerId); });
-    canvas.addEventListener('pointerup', (e) => {
-      if (drag && moved < 6 && hover >= 0) location.href = nodes[hover].href;
+    canvas.addEventListener('pointerup', () => {
+      if (drag && moved < 6) {
+        if (hover) location.href = hover.href;
+        else if (onCone) location.href = href;
+      }
       drag = null;
     });
     canvas.addEventListener('pointermove', (e) => {
@@ -141,11 +148,10 @@ const { nodes = [] } = Astro.props;
     let visible = true;
     new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(canvas);
 
-    const tick = (ms) => {
+    const tick = () => {
       requestAnimationFrame(tick);
       if (!visible) return;
       if (!drag && !still) az += 0.0009;
-      if (!still) { knot.rotation.y = ms * 0.00016; knot.rotation.x = ms * 0.00009; }
 
       const d = 21;
       cam.position.set(
@@ -157,20 +163,22 @@ const { nodes = [] } = Astro.props;
 
       ray.setFromCamera(ptr, cam);
       const hit = ray.intersectObject(points)[0];
-      const idx = hit ? hit.index : -1;
-      if (idx !== hover) {
-        hover = idx;
-        canvas.style.cursor = idx >= 0 ? 'pointer' : 'grab';
-        if (idx >= 0) {
-          const n = nodes[idx];
-          tag.href = n.href;
-          tag.querySelector('b').textContent = n.title;
-          tag.querySelector('i').textContent = n.meta;
+      const node = hit ? works[hit.index] : null;
+      if (hit) at.fromArray(pos, hit.index * 3);
+
+      onCone = !node && ray.intersectObjects(shells).length > 0;
+      if (node !== hover) {
+        hover = node;
+        if (node) {
+          tag.href = node.href;
+          tag.querySelector('b').textContent = node.title;
+          tag.querySelector('i').textContent = node.meta;
         }
-        tag.classList.toggle('on', idx >= 0);
+        tag.classList.toggle('on', !!node);
       }
-      if (hover >= 0) {
-        const v = new THREE.Vector3(...pos.slice(hover * 3, hover * 3 + 3)).project(cam);
+      canvas.style.cursor = node || onCone ? 'pointer' : 'grab';
+      if (hover) {
+        const v = at.clone().project(cam);
         tag.style.left = `${(v.x * 0.5 + 0.5) * 100}%`;
         tag.style.top = `${(-v.y * 0.5 + 0.5) * 100}%`;
       }
@@ -181,11 +189,10 @@ const { nodes = [] } = Astro.props;
 </script>
 
 <style>
-  .spacetime { position: relative; height: min(78vh, 760px); margin: 0 0 var(--s52); }
+  /* Left of the stage. The rings own the right — they must not overlap,
+     or the rings' hit paths swallow clicks meant for points on the cone. */
+  .spacetime { position: absolute; inset: 0 32% 0 0; }
   .spacetime canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
-  .spacetime .hud { position: absolute; left: 0; bottom: 0; pointer-events: none; max-width: 46ch; }
-  .spacetime .hud .lede { margin-bottom: var(--s1); }
-  .hint { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); margin: 0; }
 
   .tag {
     position: absolute; transform: translate(-50%, -140%);
@@ -196,8 +203,6 @@ const { nodes = [] } = Astro.props;
   .tag b { display: block; font-weight: 400; font-size: 14px; }
   .tag i { font-style: normal; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
 
-  @media (max-width: 640px) {
-    .spacetime { height: 62vh; }
-    .spacetime .hud { position: static; margin-top: var(--s32); }
-  }
+  @media (max-width: 720px) { .spacetime { inset: 0 0 42% 0; } }
+
 </style>

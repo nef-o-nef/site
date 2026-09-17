@@ -1,40 +1,37 @@
 ---
 import Base from '../layouts/Base.astro';
 import Spacetime from '../components/Spacetime.astro';
-import Dial from '../components/Dial.astro';
+import Rings from '../components/Rings.astro';
 import { getCollection } from 'astro:content';
 
 const base = import.meta.env.BASE_URL;
 const p = (s = '') => `${base}/${s.replace(/^\//, '')}`.replace(/\/{2,}/g, '/');
 
+const now = new Date();
+const over = (e) => (e.data.endDate ?? e.data.date) < now;
+const day = (d) => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
 const projects = (await getCollection('projects', (e) => !e.data.draft))
   .sort((a, b) => b.data.year - a.data.year);
-const events = (await getCollection('events', (e) => !e.data.draft));
+const events = await getCollection('events', (e) => !e.data.draft);
 
-const now = new Date();
-const yrs = (d) => (d - now) / 31557600000;   // signed years from today
+// Works sit on the cone, placed by year.
+const works = projects.map((w) => ({
+  href: p(`projects/${w.id}/`),
+  title: w.data.title,
+  meta: `${w.data.year} · project`,
+  t: Math.max(-9, (w.data.year - now.getFullYear()) * 1.1 - 0.6),
+}));
 
-// Past projects fall on the lower cone, scheduled events on the upper one.
-const nodes = [
-  ...projects.map((w) => ({
-    href: p(`projects/${w.id}/`),
-    title: w.data.title,
-    meta: `${w.data.year} · project`,
-    t: Math.max(-9, (w.data.year - now.getFullYear()) * 1.1 - 0.6),
-  })),
-  ...events.map((e) => ({
-    href: p('events/'),
-    title: e.data.title,
-    meta: `${e.data.city} · event`,
-    t: Math.max(0.8, Math.min(9, yrs(e.data.date) * 6 + 1.2)),
-  })),
-];
-
-const covers = projects.filter((w) => w.data.cover).map((w) => ({ id: w.id, src: w.data.cover }));
+// Events ride the rings — a separate drawing, in separate coordinates.
+const ride = (e) => ({ href: p('events/'), title: e.data.title, meta: `${e.data.city} · ${day(e.data.date)}` });
+const soon = events.filter((e) => !over(e)).sort((a, b) => a.data.date - b.data.date).map(ride);
+const done = events.filter(over).sort((a, b) => b.data.date - a.data.date).map(ride);
 ---
 
-<Base title={null} covers={covers}>
-  <Spacetime nodes={nodes} />
-  <h2 class="eyebrow">Index</h2>
-  <Dial works={projects} />
+<Base title={null}>
+  <div class="stage">
+    <Spacetime works={works} href={p('projects/')} />
+    <Rings soon={soon} done={done} href={p('events/')} />
+  </div>
 </Base>

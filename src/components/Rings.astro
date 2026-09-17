@@ -1,0 +1,124 @@
+---
+// Events, drawn flat. A closed curve seen at a tilt: r(θ) = R + A·cos(nθ),
+// squashed vertically so the disc reads as a plane in space. One lobe per event,
+// with a small open ring at each tip.
+//
+// Two of them, stacked — not concentric. The upper one goes clockwise and holds
+// what is still ahead; the lower goes counter-clockwise and holds what is over.
+//
+// Turning means advancing the phase, not rotating the drawing: the ellipse is
+// unchanged by a spin about its own axis, so only the lobes travel. Any closed
+// curve that wraps a centre can drive this — swap the r(θ) below for a radius
+// table sampled off a drawn path and the motion is identical.
+// The curves are links too. Each visible path gets a fat transparent twin so
+// there is something wide enough to click — a 1px stroke is not a target.
+const { soon = [], done = [], href = '#' } = Astro.props;
+---
+
+<div class="rings">
+<svg viewBox="0 0 300 300" fill="none">
+  <a href={href}>
+    <path id="hit-a" class="hit" stroke="transparent" stroke-width="16" />
+    <path id="hit-b" class="hit" stroke="transparent" stroke-width="16" />
+    <path id="ring-a" stroke="var(--rule)" stroke-width="1.2" />
+    <path id="ring-b" stroke="var(--rule)" stroke-width="1" />
+  </a>
+  <g id="tips-a"></g>
+  <g id="tips-b"></g>
+</svg>
+<a class="tag" id="ring-tag" href="#"><b></b><i></i></a>
+</div>
+
+<script type="application/json" id="rings" set:html={JSON.stringify({ soon, done })}></script>
+
+<script>
+  const { soon, done } = JSON.parse(document.getElementById('rings').textContent);
+  const tag = document.getElementById('ring-tag');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const TAU = Math.PI * 2, NS = 'http://www.w3.org/2000/svg';
+  const CX = 150, SQUASH = 0.34;
+  const HUES = ['#27a327', '#141414', '#c6c223', '#cf2b2b', '#9c1f9c', '#7ecb3c', '#2b2bbe'];
+
+  const at = (cy, R, A, n, k, t) => {
+    const r = R + A * Math.cos(n * (t - k));
+    return [CX + Math.cos(t) * r, cy + Math.sin(t) * r * SQUASH];
+  };
+
+  const band = (list, { path, hit, tips, cy, R, stroke, tip, hue, dir }) => {
+    const n = list.length >= 3 ? list.length : 0;
+    const A = n ? R * 0.2 : 0;
+    const el = document.getElementById(path), pad = document.getElementById(hit);
+    const dots = list.map((node, i) => {
+      const c = document.createElementNS(NS, 'ellipse');
+      c.setAttribute('rx', tip);
+      c.setAttribute('ry', tip * 0.72);
+      c.setAttribute('stroke', hue(i));
+      c.setAttribute('stroke-width', '2');
+      c.addEventListener('pointerenter', () => {
+        tag.href = node.href;
+        tag.querySelector('b').textContent = node.title;
+        tag.querySelector('i').textContent = node.meta;
+        tag.style.left = `${(c.getAttribute('cx') / 300) * 100}%`;
+        tag.style.top = `${(c.getAttribute('cy') / 300) * 100}%`;
+        tag.classList.add('on');
+      });
+      c.addEventListener('pointerleave', () => tag.classList.remove('on'));
+      document.getElementById(tips).appendChild(c);
+      return c;
+    });
+
+    return (phase) => {
+      const k = phase * dir;
+      let d = '';
+      for (let i = 0; i <= 200; i++) {
+        const [x, y] = at(cy, R, A, n || 1, k, (i / 200) * TAU);
+        d += `${i ? 'L' : 'M'}${x.toFixed(2)} ${y.toFixed(2)}`;
+      }
+      el.setAttribute('d', d + 'Z');
+      el.setAttribute('stroke', stroke);
+      pad.setAttribute('d', d + 'Z');
+      dots.forEach((c, i) => {
+        const [x, y] = at(cy, R, A, n || 1, k, k + (i / list.length) * TAU);
+        c.setAttribute('cx', x.toFixed(2));
+        c.setAttribute('cy', y.toFixed(2));
+      });
+    };
+  };
+
+  // cy is the only thing separating the two layers — swap them to put the past on top.
+  const draw = [
+    band(soon, { path: 'ring-a', hit: 'hit-a', tips: 'tips-a', cy: 96,  R: 86, stroke: '#3ab9cc', tip: 7, dir: -1, hue: (i) => HUES[i % HUES.length] }),
+    band(done, { path: 'ring-b', hit: 'hit-b', tips: 'tips-b', cy: 204, R: 66, stroke: 'var(--glow)', tip: 4.5, dir: 1, hue: () => 'var(--glow)' }),
+  ];
+
+  let phase = 0;
+  const tick = () => {
+    phase += 0.0022;
+    draw.forEach((f) => f(phase));
+    if (!still) requestAnimationFrame(tick);
+  };
+  tick();
+</script>
+
+<style>
+  /* Its own box, its own coordinates, and its own slice of the stage — the
+     transparent hit paths are 16px wide, so any overlap with the canvas would
+     steal clicks from the cone underneath. */
+  .rings { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 28%; max-width: 330px; }
+  .rings svg { display: block; width: 100%; overflow: visible; }
+  .rings ellipse, .rings .hit { cursor: pointer; }
+  .rings path { pointer-events: stroke; }
+
+  .tag {
+    position: absolute; transform: translate(-50%, -150%);
+    display: none; padding: 6px 10px; background: var(--field);
+    border: 1px solid var(--rule); color: var(--ink); white-space: nowrap;
+  }
+  .tag.on { display: block; }
+  .tag b { display: block; font-weight: 400; font-size: 14px; }
+  .tag i { font-style: normal; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+
+  @media (max-width: 720px) {
+    .rings { right: 50%; top: auto; bottom: 0; transform: translateX(50%); width: 62%; max-width: 260px; }
+  }
+</style>
